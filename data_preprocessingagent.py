@@ -75,7 +75,7 @@ class DataPreprocessingAgent:
 
         test[feature_cols] = self.scaler.transform(test[feature_cols])
 
-        joblib.dump(self.scaler,"models/scaler.pkl")
+        joblib.dump(self.scaler,"scaler.pkl")
 
         return train,test
 
