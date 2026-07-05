@@ -1,7 +1,9 @@
 from data_preprocessingagent import DataPreprocessingAgent
 from health_monitoring_agent import HealthMonitoringAgent
 from rul_agent import RULAgent
-
+from maintenance_agent import MaintenanceRecommendationAgent
+from report_generation_agent import ReportGenerationAgent
+from rag_agent import RAGAgent
 
 def main():
 
@@ -52,16 +54,45 @@ def main():
     print("RUL Agent Completed")
 
     # -------------------------
+    # Agent 4 : Maintenance Agent
+    # -------------------------
+    
+    print("\n[4] Running Maintenance Recommendation Agent...")
+    
+    maintenance_agent = MaintenanceRecommendationAgent()
+    
+    final_output = maintenance_agent.recommend(
+        rul_output
+    )
+    
+    print("Maintenance Recommendation Completed")
+
+    # -------------------------
+    # Report Generation Agent
+    # -------------------------
+
+    print("\n[5] Running Report Generation Agent...")
+
+    report_agent = ReportGenerationAgent()
+    
+    report = report_agent.generate(final_output)
+    
+    print("Report Generation Completed")
+
+    print("\nSystem Report:\n")
+    print(report)
+    
+    # -------------------------
     # Save Results
     # -------------------------
 
-    rul_output.to_csv(
-        "rul_agent_output.csv",
+    final_output.to_csv(
+        "final_output.csv",
         index=False
     )
 
     print("\nOutput Saved:")
-    print("rul_agent_output.csv")
+    print("final_output.csv")
 
     # -------------------------
     # Sample Results
@@ -70,31 +101,61 @@ def main():
     print("\nSample Results:\n")
 
     print(
-        rul_output[
+        final_output[
             [
                 "engine_id",
                 "cycle",
                 "Predicted_RUL",
+                "Health_Status",
                 "Fault_Status",
                 "Risk_Level",
-                "Key_Factor"
+                "Maintenance_Priority",
+                "Maintenance_Action"
             ]
         ].head(10)
     )
 
     print(
-        rul_output[
+        final_output[
             [
                 "engine_id",
-                "Health_Status",
-                "Risk_Level",
                 "Key_Factor",
-                "Explanation"
+                "Explanation",
+                "Maintenance_Action"
             ]
         ].head(10)
     )
 
     print("\nPipeline Completed Successfully")
+
+    # -------------------------
+    # Agent 6 : RAG Agent
+    # -------------------------
+    
+    print("\n[6] Running RAG Agent...")
+    
+    rag_agent = RAGAgent(
+        data_file="final_output.csv",
+        report_file="system_report.csv"
+    )
+    
+    print("RAG Agent Ready!")
+    
+    print("\nYou can now ask questions about the engine data.")
+    print("Type 'exit' to quit.\n")
+    
+    while True:
+    
+        query = input("Question: ")
+    
+        if query.lower() == "exit":
+            print("Exiting chatbot...")
+            break
+    
+        result = rag_agent.retrieve(query)
+    
+        print("\nRetrieved Information:\n")
+        print(result)
 
 
 if __name__ == "__main__":
