@@ -26,27 +26,24 @@ class HealthMonitoringAgent:
         return df
 
     def calculate_degradation_score(self, df, sensor_cols):
-        baseline=(df.groupby("engine_id").first()[sensor_cols])
-        degradation_scores=[]
-        for _, row in df.iterrows():
-            engine=row["engine_id"]
-            baseline_values=baseline.loc[engine]
-            current_values=row[sensor_cols]
-            degradation=np.mean(np.abs(current_values.values-baseline_values.values))
-            degradation_scores.append(degradation)
-        df["Degradation_Score"] = degradation_scores
-        return df
+       baseline=(df.groupby("engine_id")[sensor_cols].transform("first"))
+       df["Degradation_Score"]=(np.abs(df[sensor_cols]-baseline).mean(axis=1))
+       return df
 
     def calculate_degradation_health(self, df):
-        max_deg=df["Degradation_Score"].max()
+        max_deg=max(df["Degradation_Score"].max(),1)
         df["Degradation_Health"]=(100-(df["Degradation_Score"]/max_deg)*100)
         df["Degradation_Health"]=(df["Degradation_Health"].clip(lower=0))
         return df
 
     def detect_anomalies(self,df,sensor_cols):
         for sensor in sensor_cols:
-            zscore=(df[sensor]-df[sensor].mean())/df[sensor].std()
-            df[f"{sensor}_anomaly"]=(np.abs(zscore)>3).astype(int)
+            std=df[sensor].std()
+            if std==0:
+                df[f"{sensor}_anomaly"]=0
+            else:
+                zscore=(df[sensor]-df[sensor].mean())/std
+                df[f"{sensor}_anomaly"]=(np.abs(zscore)>3).astype(int)
         anomaly_cols=[
             col
             for col in df.columns
@@ -56,7 +53,8 @@ class HealthMonitoringAgent:
         return df
 
     def calculate_rul_health(self, df):
-        df["RUL_Health"]=(df["RUL"]/125)*100
+        max_rul=max(df["RUL"].max(),1)
+        df["RUL_Health"]=(df["RUL"]/max_rul)*100
         df["RUL_Health"]=(df["RUL_Health"].clip(0, 100))
         return df
 
