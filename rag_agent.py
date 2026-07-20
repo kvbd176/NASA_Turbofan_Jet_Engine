@@ -35,12 +35,26 @@ class RAGAgent:
         # -------------------------------
         elif "engine" in query:
             match = re.search(r"\d+", query)
+
             if not match:
-                return "Engine number not found."
+                available = sorted(self.data["engine_id"].unique())
+                return (
+                    f"Please provide an engine number. "
+                    f"Available engine IDs range from "
+                    f"{available[0]} to {available[-1]}."
+                )
+            
             engine = int(match.group())
+            
             result = self.data[self.data["engine_id"].astype(int) == engine]
+            
             if result.empty:
-                return f"Engine {engine} not found."
+                available = sorted(self.data["engine_id"].unique())
+                return (
+                    f"Engine {engine} not found. "
+                    f"Available engine IDs range from "
+                    f"{available[0]} to {available[-1]}."
+                )
             latest = result.loc[result["cycle"].idxmax()]
             # Health Status
             if "health" in query:
