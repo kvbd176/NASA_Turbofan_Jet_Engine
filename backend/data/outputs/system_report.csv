@@ -1,0 +1,9 @@
+Metric,Value
+Total_Engines,100.0
+Healthy,18992.0
+Degrading,4907.0
+Critical,821.0
+Faults_Detected,837.0
+High_Risk,837.0
+Immediate_Maintenance,2121.0
+Average_RUL,93.14

@@ -1,0 +1,61 @@
+import pandas as pd
+import os
+
+
+df = pd.read_csv(
+    "../data/outputs/final_output.csv"
+)
+
+
+documents=[]
+
+
+for engine_id in df["engine_id"].unique():
+
+    engine=df[df["engine_id"]==engine_id]
+
+    latest=engine.iloc[-1]
+
+
+    text=f"""
+Engine ID: {engine_id}
+
+Current cycle:
+{latest['cycle']}
+
+Engine health information:
+
+Sensor values:
+{latest.to_dict()}
+
+The engine has completed {latest['cycle']} cycles.
+
+Use this information to answer questions about engine health,
+fault condition and remaining useful life.
+"""
+
+
+    documents.append(text)
+
+
+
+os.makedirs(
+    "documents",
+    exist_ok=True
+)
+
+
+with open(
+    "documents/engine_reports.txt",
+    "w"
+) as f:
+
+    f.write(
+        "\n\n".join(documents)
+    )
+
+
+print(
+    "Documents created:",
+    len(documents)
+)
