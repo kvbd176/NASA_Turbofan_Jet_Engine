@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from fastapi.middleware.cors import CORSMiddleware
 from api.routes.dashboard import router as dashboard_router
 from api.routes.analytics import router as analytics_router
 from api.routes.reports import router as reports_router
@@ -17,6 +18,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="NASA Predictive Maintenance API"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

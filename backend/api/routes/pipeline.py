@@ -11,7 +11,6 @@ from services.data_service import (
     process_user_dataset
 )
 
-
 router = APIRouter()
 
 
@@ -42,7 +41,6 @@ def run_pipeline(
             current_user.id
         )
 
-
         return {
             "status": "SUCCESS",
             "user_id": current_user.id,
@@ -51,6 +49,9 @@ def run_pipeline(
 
 
     except Exception as e:
+
+        import traceback
+        traceback.print_exc()
 
         raise HTTPException(
             status_code=500,

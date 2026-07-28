@@ -116,6 +116,7 @@ class AnalyticsAgent:
         return critical[
             [
                 "engine_id",
+                "Health_Status",
                 "Predicted_RUL",
                 "Risk_Level"
             ]

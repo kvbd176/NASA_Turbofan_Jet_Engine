@@ -11,7 +11,6 @@ from llm.llm_service import generate_answer
 
 router = APIRouter()
 
-
 class ChatRequest(BaseModel):
     query: str
 
@@ -35,7 +34,6 @@ def chat(
         retrieved_data = rag_agent.retrieve(
             request.query
         )
-
 
         context = f"""
         User ID: {current_user.id}
@@ -77,7 +75,39 @@ def chat(
     db.commit()
     db.close()
 
-
     return {
         "answer": answer
     }
+
+
+@router.get("/history")
+def get_chat_history(
+    current_user=Depends(get_current_user)
+):
+
+    db = SessionLocal()
+
+    chats = (
+        db.query(Chat)
+        .filter(Chat.user_id == current_user.id)
+        .order_by(Chat.created_at.asc())
+        .all()
+    )
+
+    history = []
+
+    for chat in chats:
+
+        history.append({
+            "type": "user",
+            "text": chat.query
+        })
+
+        history.append({
+            "type": "bot",
+            "text": chat.response
+        })
+
+    db.close()
+
+    return history

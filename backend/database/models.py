@@ -13,11 +13,9 @@ from datetime import datetime
 from database.database import Base
 
 
-
 class User(Base):
 
     __tablename__ = "users"
-
 
     id = Column(
         Integer,
@@ -100,22 +98,18 @@ class Report(Base):
         primary_key=True
     )
 
-
     user_id = Column(
         Integer,
         ForeignKey("users.id")
     )
 
-
     engine_id = Column(
         Integer
     )
 
-
     report_text = Column(
         Text
     )
-
 
     created_at = Column(
         DateTime,

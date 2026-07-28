@@ -60,11 +60,22 @@ def load_user_dataset(user_id):
     if dataset_path is None:
         return None
 
-    df = pd.read_csv(
-    dataset_path,
-        sep=r"\s+",
-        header=None
-    )
+    import os
+
+    extension = os.path.splitext(dataset_path)[1].lower()
+
+    if extension == ".txt":
+        df = pd.read_csv(
+            dataset_path,
+            sep=r"\s+",
+            header=None
+        )
+
+    elif extension == ".csv":
+        df = pd.read_csv(dataset_path)
+
+    else:
+        raise ValueError("Unsupported file format")
 
     df.columns = [
         "engine_id",
