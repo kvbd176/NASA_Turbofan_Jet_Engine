@@ -22,8 +22,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://nasa-turbofan-jet-engine.vercel.app"
+    allow_origins = [
+    "http://localhost:5173",
+    "https://nasa-turbofan-jet-engine.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
